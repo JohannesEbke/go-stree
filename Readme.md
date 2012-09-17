@@ -3,6 +3,8 @@
 go-stree is a package for Go that can be used to process a large number of intervals.
 The main purpose of this module is to solve the following problem: given a set of intervals, how to find all overlapping intervals at a certain point or within a certain range.
 
+This version of s-tree was modified to be more garbage-collector friendly for large trees, this might have impacted correctness of untested routines.
+
 It offers three different algorithms:
 - **stree**: implemented as segment tree
 - **serial**: simple sequential algorithm, mainly for testing purposes
@@ -110,5 +112,6 @@ Use of this source code is governed by a BSD-style license that can be found in 
 ## About
 
 written by Thomas Oberndörfer <toberndo@yarkon.de>  
+stree rewritten gc-friendly by Johannes Ebke <johannes@ebke.org>
 Blog: http://www.chasinclouds.com/  
 follow me on [Twitter](https://twitter.com/#!/toberndo)  

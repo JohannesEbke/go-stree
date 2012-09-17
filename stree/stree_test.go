@@ -192,7 +192,7 @@ func BenchmarkInsertNodes100000(b *testing.B) {
 		endpoint, tree.min, tree.max = Endpoints(tree.base)
 		//fmt.Println(len(endpoint))
 		b.StartTimer()
-		tree.root = tree.insertNodes(endpoint)
+		tree.insertNodes(endpoint)
 	}
 }
 
@@ -203,10 +203,10 @@ func BenchmarkInsertIntervals100000(b *testing.B) {
 		pushRandom(tree, 100000)
 		var endpoint []int
 		endpoint, tree.min, tree.max = Endpoints(tree.base)
-		tree.root = tree.insertNodes(endpoint)
+		tree.insertNodes(endpoint)
 		b.StartTimer()
 		for i := range tree.base {
-			insertInterval(tree.root, &tree.base[i])
+			tree.insertInterval(0, int32(i))
 		}
 	}
 }
