@@ -25,16 +25,16 @@ func TestTreeGC(t *testing.T) {
 	tree.BuildTree()
 	log.Print("...done!")
 
-        memstats := new(runtime.MemStats)
-        for i := 0; i < 5; i++ {
-                log.Print("GC()")
-                runtime.GC()
-                runtime.ReadMemStats(memstats)
-                this_pause := time.Duration(memstats.PauseNs[(memstats.NumGC-1)%256])
-                all_pause := time.Duration(memstats.PauseTotalNs)
-                log.Printf("GC paused for %v -- total %v -- N %d", this_pause, all_pause, memstats.NumGC)
-                log.Printf("alloc'd = %6d MB; (+footprint = %6d MB)",
-                        memstats.HeapAlloc/1024/1024,
-                        (memstats.Sys-memstats.HeapAlloc)/1024/1024)
-        }
+	memstats := new(runtime.MemStats)
+	for i := 0; i < 5; i++ {
+		log.Print("GC()")
+		runtime.GC()
+		runtime.ReadMemStats(memstats)
+		this_pause := time.Duration(memstats.PauseNs[(memstats.NumGC-1)%256])
+		all_pause := time.Duration(memstats.PauseTotalNs)
+		log.Printf("GC paused for %v -- total %v -- N %d", this_pause, all_pause, memstats.NumGC)
+		log.Printf("alloc'd = %6d MB; (+footprint = %6d MB)",
+			memstats.HeapAlloc/1024/1024,
+			(memstats.Sys-memstats.HeapAlloc)/1024/1024)
+	}
 }

@@ -40,10 +40,10 @@ type stree struct {
 	min int
 	// Max value of all intervals
 	max int
-        // Temporary map to hold node overlaps
+	// Temporary map to hold node overlaps
 	temp_overlap map[int32][]int32
-        // Permanent overlap store
-        overlaps []int32
+	// Permanent overlap store
+	overlaps []int32
 }
 
 type node struct {
@@ -92,51 +92,51 @@ const (
 
 // Traverse tree recursively call enter when entering node, resp. leave
 func (t *stree) traverse(node int32, enter, leave NodeReceive) {
-       if !t.HasNode(node) {
-               return
-       }
-       if enter != nil {
-               enter(t, node)
-       }
-       t.traverse(t.rightChild(node), enter, leave) // right
-       t.traverse(t.leftChild(node), enter, leave)  // left
-       if leave != nil {
-               leave(t, node)
-       }
+	if !t.HasNode(node) {
+		return
+	}
+	if enter != nil {
+		enter(t, node)
+	}
+	t.traverse(t.rightChild(node), enter, leave) // right
+	t.traverse(t.leftChild(node), enter, leave)  // left
+	if leave != nil {
+		leave(t, node)
+	}
 }
 
 func (t *stree) Print() {
-       t.traverse(0, func(t *stree, node int32) {
-               segment, overlap := t.GetNode(node)
-               fmt.Printf("\nSegment: (%d,%d)", segment.From, segment.To)
-               for intrvl := range overlap {
-                       fmt.Printf("\nInterval %d: (%d,%d)", t.base[intrvl].Id, t.base[intrvl].Segment.From, t.base[intrvl].Segment.To)
-               }
-       }, nil)
+	t.traverse(0, func(t *stree, node int32) {
+		segment, overlap := t.GetNode(node)
+		fmt.Printf("\nSegment: (%d,%d)", segment.From, segment.To)
+		for intrvl := range overlap {
+			fmt.Printf("\nInterval %d: (%d,%d)", t.base[intrvl].Id, t.base[intrvl].Segment.From, t.base[intrvl].Segment.To)
+		}
+	}, nil)
 }
 
 // Tree2Array transforms tree to array
 func (t *stree) Tree2Array() []SegmentOverlap {
-       array := make([]SegmentOverlap, 0, 50)
-       t.traverse(0, func(t *stree, node int32) {
-               segment, _ := t.GetNode(node)
-               seg := SegmentOverlap{Segment: *segment, Interval: t.Overlap(node)}
-               array = append(array, seg)
-       }, nil)
-       return array
+	array := make([]SegmentOverlap, 0, 50)
+	t.traverse(0, func(t *stree, node int32) {
+		segment, _ := t.GetNode(node)
+		seg := SegmentOverlap{Segment: *segment, Interval: t.Overlap(node)}
+		array = append(array, seg)
+	}, nil)
+	return array
 }
 
 // Overlap transforms []*Interval to []Interval
 func (t *stree) Overlap(node_index int32) []Interval {
-       _, overlap := t.GetNode(node_index)
-       if overlap == nil {
-               return nil
-       }
-       interval := make([]Interval, len(overlap))
-       for i, pintrvl := range overlap {
-               interval[i] = t.base[pintrvl]
-       }
-       return interval
+	_, overlap := t.GetNode(node_index)
+	if overlap == nil {
+		return nil
+	}
+	interval := make([]Interval, len(overlap))
+	for i, pintrvl := range overlap {
+		interval[i] = t.base[pintrvl]
+	}
+	return interval
 }
 
 // NewTree returns a Tree interface with underlying segment tree implementation
@@ -164,7 +164,7 @@ func (t *stree) Clear() {
 	t.base = make([]Interval, 0)
 	t.min = 0
 	t.max = 0
-        t.temp_overlap = make(map[int32][]int32)
+	t.temp_overlap = make(map[int32][]int32)
 }
 
 // Build segment tree out of interval stack
@@ -180,13 +180,13 @@ func (t *stree) BuildTree() {
 		t.insertInterval(0, int32(i))
 	}
 	for node := range t.nodes {
-            t.nodes[int32(node)].overlap_index = int32(len(t.overlaps))
-            overlap := t.temp_overlap[int32(node)]
-            for i := range overlap {
-                t.overlaps = append(t.overlaps, overlap[i])
-            }
-        }
-        t.temp_overlap = nil
+		t.nodes[int32(node)].overlap_index = int32(len(t.overlaps))
+		overlap := t.temp_overlap[int32(node)]
+		for i := range overlap {
+			t.overlaps = append(t.overlaps, overlap[i])
+		}
+	}
+	t.temp_overlap = nil
 }
 
 // Add a node to the tree
@@ -206,15 +206,15 @@ func (t *stree) GetNode(node int32) (*Segment, []int32) {
 	if !t.HasNode(node) {
 		return nil, nil
 	}
-        o_begin := int32(t.nodes[node].overlap_index)
-        o_end := int32(len(t.overlaps))
-        if node != int32(len(t.nodes) - 1) {
-            o_end = t.nodes[node+1].overlap_index
-        }
-        if (o_begin == o_end) {
-            return &t.nodes[node].segment, nil
-        }
-        return &t.nodes[node].segment, t.overlaps[o_begin:o_end]
+	o_begin := int32(t.nodes[node].overlap_index)
+	o_end := int32(len(t.overlaps))
+	if node != int32(len(t.nodes)-1) {
+		o_end = t.nodes[node+1].overlap_index
+	}
+	if o_begin == o_end {
+		return &t.nodes[node].segment, nil
+	}
+	return &t.nodes[node].segment, t.overlaps[o_begin:o_end]
 }
 
 func (t *stree) GetIntervalSegment(interval int32) *Segment {
